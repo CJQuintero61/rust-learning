@@ -24,6 +24,8 @@ pub struct Button {
     pub label: String,
 }
 
+// the compiler will error if a struct that implements a trait object
+// does not implement all the required methods of the trait
 impl Draw for Button {
     fn draw(&self) {
         // code to actually draw a button
