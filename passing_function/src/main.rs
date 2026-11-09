@@ -1,42 +1,32 @@
+
+/*
+    the notation <F: Fn(i32) -> i32> means F is any function
+    or closure that takes in an i32 param and returns an i32
+
+    then f: F is the local param name of type F defined in the <> before it
+*/
+fn apply_twice<F: Fn(i32) -> i32>(f: F, x: i32) -> i32 {
+    f(f(x))
+}
+
+fn add_three(x: i32) -> i32 {
+    x + 3
+}
+
 fn main() {
-    // closures are anon functions that you can store
-    // in a variable with params between pipes
-    // closures also use type inference, so
-    // type annotating the params is optional
-    // let add_one = |x: i32| x + 1;
-    // println!("{}", add_one(5)); // 6
+    // passing a regular function
+    let a = apply_twice(add_three, 10);
+    println!("{a}"); // 16
 
-    funky()
+    // passing a closure
+    let b = apply_twice(|x| x * 2, 10);
+    println!("{b}"); // 40
 
-    // closures can also be explicit on their return and param types
-    // and can span multiple lines too like a function,
-    // but stored in a var
-    let expensive_closure = |num: u32| -> u32 {
-        println!("calculating slowly...");
-        thread::sleep(Duration::from_secs(2));
-        num
-    };
-
-    // takes in a param and just returns it
-    // the compiler infers the types of the params and return
-    // calling this once, will bind the closure to a specific type
-    let closure_type = |x| x;
-
-    // binds closure type to only work on strings
-    let s = closure_type(String::from("Hello"));
-
-    // compiler error sicne the closure now expects string types
-    let n = closure_type(n);
+    
 
 }
 
-
-fn funky() {
-    // the actual closure is the add_offset line
-    // and it is able to see the offset var even
-    // though it wasn't passed into it
-    // normal functions can't do this
-    let offset: i32 = 10;
-    let add_offset = |x: i32| x + offset;
-    println!("{}", add_offset(5));
+// you can also use a function pointer instead of a generic
+fn apply_twice(f: fn(i32) -> i32, x: i32) -> i32 {
+    f(f(x))
 }

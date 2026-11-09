@@ -75,3 +75,42 @@ if you don't use move here since then the closure takes the immutable ref
 of the list, but can be invalid if the main thread finishes first. To keep
 the ref valid, the compiler will error for this to keep all immutable
 refs valid.
+
+
+After getting values from passing things into the closure,
+the body now defines what happens to references or values whent he closure is
+evaluated later, affecting what is moved out of it
+
+A closure body can do any of
+
+- move a captured value out of the closer
+- mutate a captured value
+- neither move nor mutate a value
+- capture nothing from the environment
+
+The way a closure captures and handles values from the env affects which
+triats the closure implements, and trains are how functions
+and structs can specify what kinsd of closures they can use.
+
+Closures will auto implement 1, 2, or 3 of these Fn traits
+in an additive fashion depending on how the boyd handles the values
+
+FnOnce - applies to closures that can be called once. All closures implement at least this
+trait. A closure that moves captured values out of its body will only implemnt
+FnOnce and no other traits since it can only be called once.
+
+FnMut - applies to clsoures that don't move captured values out of their body but might
+mutate the captured values. These closures can be called more than once.
+
+Fn - applies to closures that don't move captured values out of their boyd
+and don't mutate captured values, as well as closures that capture nothing
+from their env. THese can be called many times without mutating
+their env which is important in concurrency.
+
+When a closure is defined, the ownership is moved into the closure automatically
+based on what it does with its captures. Remember it can be moved, immut borrow, or mut 
+borrow. The body determines the capture mode and the trait, but the capture
+mode can be overridden with `move` even if the closure doens't need ownerhsip.
+
+Thus, when a closure is defined, (not called), that is when it receives ownerhsip of
+a variable and that ownerhsip can only be given once in the example.
